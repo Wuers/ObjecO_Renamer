@@ -20,9 +20,13 @@ class App(ctk.CTk):
         self.grid_columnconfigure((1,2), weight=1)
         self.grid_rowconfigure((1,2), weight=1)
        
-        self.left_sidebar = ctk.CTkFrame(self, width=100, border_color="pink")
-        self.left_sidebar.grid(row=1, column=1, rowspan=2)
+        self.left_sidebar = ctk.CTkFrame(self, border_color="pink")
+        self.left_sidebar.grid(row=1, column=1, rowspan=2, sticky="nsew",)
         self.left_sidebar.grid_rowconfigure(4, weight=1)
+
+        self.title_label = ctk.CTkLabel(frame, text="Renamer (object oriented)", font=ctk.CTkFont(size=10, weight="bold"))
+        self.title_label.grid(row=0, column=0, padx=10, pady=10)
+        
         #adding outlines to distinquish grid
         for col in range(1,3):
             for row in range(1,3):
@@ -30,8 +34,7 @@ class App(ctk.CTk):
                 frame.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
         
         #title label
-        self.title_label = ctk.CTkLabel(self.left_sidebar, text="Renamer (object oriented)", font=ctk.CTkFont(size=10, weight="bold"))
-        self.title_label.grid(row=0, column=1, padx=10, pady=10)
+        
         #treewiev
         #add files button
         self.add_files_button = ctk.CTkButton(self.left_sidebar)
