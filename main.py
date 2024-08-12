@@ -57,8 +57,6 @@ class App(ctk.CTk):
         #self.footer.grid(row=0, column=0)
         self.footer.pack(expand=True)
         #treewiev
-
-        #TO DO: SCHRINK SIZE OF TREEVIEW
         
         self.table1 = ttk.Treeview(self.center_frame,
                                      columns =('number', 'old_file_name','new_file_name','format', 'date'),
@@ -69,17 +67,33 @@ class App(ctk.CTk):
         for heading, columnname in zip(self.table1heading, self.table1column):
             self.table1.heading(heading, text=columnname)
             self.table1.column(heading, anchor='center', width=120) 
-            
+
         self.table1.grid(sticky = 'nsew')
 
         #add files button
-        self.add_files_button = ctk.CTkButton(self.left_sidebar, text="ADD FILES")
+        self.add_files_button = ctk.CTkButton(self.left_sidebar, text="ADD FILES", command=self.add_files_button)
         self.add_files_button.pack()
+
         #choose option button
+        self.title_label2 = ctk.CTkLabel(master=self.right_frame,height=20,width=100,
+                           padx=10, pady=20,
+                           text="Choose settings:")
+        self.title_label2.pack()
 
-        #frame with function options
-
+        self.optionmenu_1=ctk.CTkOptionMenu(master=self.right_frame,
+                                values=['Delete', 'Add','Add numbering','Find and change'])
+                                #command=option_callback)
+        self.optionmenu_1.set('Choose option')
+        self.optionmenu_1.pack()
+        #inside frame with function options
+        self.optionframe=ctk.CTkFrame(master=self.right_frame)
+        self.optionframe.pack(pady=20, padx=20, fill="both", expand=True)
         #
+
+    #FUNCTIONS:
+    #buttons:
+    def add_files_button():
+        print("it works")
 
 #running app
 if __name__ == "__main__":
