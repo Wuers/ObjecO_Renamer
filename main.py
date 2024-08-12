@@ -60,12 +60,21 @@ class App(ctk.CTk):
 
         #TO DO: SCHRINK SIZE OF TREEVIEW
         
-        self.table1 = ttk.Treeview(self.center_frame, columns =('number', 'old_file_name','new_file_name','format', 'date'), show = 'headings')
+        self.table1 = ttk.Treeview(self.center_frame,
+                                     columns =('number', 'old_file_name','new_file_name','format', 'date'),
+                                     show = 'headings')
+                                    
+        
         self.table1.heading('number', text = 'Number') 
         self.table1.heading('old_file_name', text = 'File name')
         self.table1.heading('new_file_name', text ='New file name')
         self.table1.heading('format', text = 'Format')
         self.table1.heading('date', text = 'Creation date')
+        self.table1.column('number', width=60)
+        self.table1.column('old_file_name', width=150)
+        self.table1.column('new_file_name', width=150)
+        self.table1.column('format', width=50)
+        self.table1.column('date', width=100)
         self.table1.grid(sticky = 'nsew')
 
         #add files button
