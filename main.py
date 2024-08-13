@@ -50,8 +50,8 @@ class App(ctk.CTk):
         self.title_label = ctk.CTkLabel(self.title_frame, text="Renamer", font=ctk.CTkFont(size=20, weight="bold"))
         self.title_label.grid(row=0, column=0, padx=10, pady=10)
         #center
-        self.title_label2 = ctk.CTkLabel(self.center_frame, text="Center", font=ctk.CTkFont(size=20, weight="bold"))
-        self.title_label2.grid(row=0, column=0, padx=10, pady=10)
+        self.center_label = ctk.CTkLabel(self.center_frame, text="Center", font=ctk.CTkFont(size=20, weight="bold"))
+        self.center_label.grid(row=0, column=0, padx=10, pady=10)
         #footer
         self.footer =ctk.CTkLabel(self.footer_frame, text="Renamer by Wiktor Sadowski 2024", font=ctk.CTkFont(size=11))
         #self.footer.grid(row=0, column=0)
@@ -75,23 +75,25 @@ class App(ctk.CTk):
         self.add_files_button.pack()
 
         #choose option button
-        self.title_label2 = ctk.CTkLabel(master=self.right_frame,height=20,width=100,
+        self.title2_label = ctk.CTkLabel(master=self.right_frame,height=20,width=100,
                            padx=10, pady=20,
                            text="Choose settings:")
-        self.title_label2.pack()
+        self.title2_label.pack()
 
         self.optionmenu_1=ctk.CTkOptionMenu(master=self.right_frame,
-                                values=['Delete', 'Add','Add numbering','Find and change'])
-                                #command=option_callback)
+                                values=['Delete', 'Add','Add numbering','Find and change'],
+                                command=self.option_callback)
+        
         self.optionmenu_1.set('Choose option')
         self.optionmenu_1.pack()
+
         #inside frame with function options
-        self.optionframe=ctk.CTkFrame(master=self.right_frame)
+        self.optionframe=ctk.CTkFrame(master=self.right_frame, fg_color="grey")
         self.optionframe.pack(pady=20, padx=20, fill="both", expand=True)
         #
 
         ###TEST
-        self.test_button=ctk.CTkButton(master=self.center_frame,text="TEST button", command=self.test_button)
+        self.test_button=ctk.CTkButton(master=self.center_frame, text="TEST button", command=self.test_button)
         self.test_button.grid()
 
     #FUNCTIONS:
@@ -100,6 +102,12 @@ class App(ctk.CTk):
     def test_button(self):
         global string_list
         string_list = "testowy ciag znakow"
+
+        global string_list2
+        string_list2 = "testowy ciag znakow"
+
+        labeltest = ctk.CTkLabel(master=self.optionframe, text='test label')
+        labeltest.grid()
 
         def printing_machine(string_to_print):
             print(f'{string_to_print}')
@@ -131,20 +139,22 @@ class App(ctk.CTk):
                 creation_time = os.path.getctime(file)
                 creation_date = datetime.datetime.fromtimestamp(creation_time)
                 formated_creation_date = creation_date.strftime("%Y-%m-%d %H:%M")
+
                 #item is a tuple - file information.
                 item = [name_without_exntension, format, formated_creation_date, file]
                 fetched_list.append(item)
-            # adding information to preview table:    
-        
+
+                # adding information to preview table:    
                 for index,file in enumerate(fetched_list, start=1):
                     file_name, format, date, full_path = file
                     data = [index, file_name, format, date]
                     self.table1.insert(parent='', index='end', values=data)
+                    print (f'printed for every file in list')
                 return fetched_list
             
-            name_format_list=f_nested_files_list(file_paths_list)
+        name_format_list=f_nested_files_list(file_paths_list)
 
-            return name_format_list
+        return name_format_list
 
     def validate_insert_if_int(self,V):
         #function to validate if inserted character is int
@@ -210,28 +220,28 @@ class App(ctk.CTk):
 
     def option_callback(self,choice):
         #function that displays elements needed for the function that has been selected
-        global func_frame
-       
-        #clear_frame()
-
+        #self.clear_frame()
+        self.option_label=ctk.CTkFrame(master=self.optionframe)
+        self.option_label.grid()
+        
         if choice =="Delete":
             #label with info:
-            self.title_label2.configure(text="Can delete given number of chars from begginng or from end of choosen file names")
+            self.option_label.configure(text="Can delete given number of chars from begginng or from end of choosen file names")
             #creating frame for specific function:
-            self.func_frame = ctk.CTkFrame(master=self.right_frame, width=400)
-            self.func_frame.pack(pady=10)
+            self.func_frame = ctk.CTkFrame(master=self.optionframe, width=400)
+            self.func_frame.grid(pady=10)
 
             global radio_var
             radio_var = ctk.StringVar(value="")
-            self.radio_buttons_frame = ctk.CTkFrame(master=self.right_frame)
-            self.radio_buttons_frame.pack()
-###todo: radio_1 and radio_2 pack not grid
+            self.radio_buttons_frame = ctk.CTkFrame(master=self.optionframe)
+            self.radio_buttons_frame.grid()
+
             radio_1 = ctk.CTkRadioButton(master=self.radio_buttons_frame, text="At the beginning", variable=radio_var, value="beginning")
             #radio_1.grid(row=0, column=0, pady=10)
-            radio_1.pack()
+            radio_1.grid()
             radio_2 = ctk.CTkRadioButton(master=self.radio_buttons_frame, text="From end", variable=radio_var, value="end")
             #radio_2.grid(row=0, column=2, pady=10)
-            radio_2.pack()
+            radio_2.grid()
 
             #entry to insert number of characters thats going to be deleted:
             validate_cmd=self.radio_buttons_frame.register(self.validate_insert_if_int)
@@ -244,10 +254,8 @@ class App(ctk.CTk):
                 width=250,
                 validate="key",
                 validatecommand=(validate_cmd, '%P')
-                )
-            #delete_entry.grid(row=1, column =1, pady=10)
-###todo:  pack not grid        
-            delete_entry.pack()
+                )       
+            delete_entry.grid()
 
             #button to send value and preview:
             self.func_d_preview_button = ctk.CTkButton(
@@ -261,11 +269,10 @@ class App(ctk.CTk):
             func_d_save_button = ctk.CTkButton(
                 master=self.radio_buttons_frame,
                 text="SAVE CHANGES",
-                command=self.delete_save
+                command=self.delete_save()
             )
-###todo:  pack not grid   
-            func_d_save_button.pack()
-            #func_d_save_button.grid(row=2, column=3, pady=10)
+            func_d_save_button.grid()
+            
 
         elif choice =="Add":
             
