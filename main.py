@@ -35,13 +35,13 @@ class App(ctk.CTk):
         self.title_frame.grid(row=0, columnspan=3, sticky='nsew', pady=10, padx=10)
 
         self.left_sidebar = ctk.CTkFrame(self, width=150, fg_color="black")
-        self.left_sidebar.grid(row=1, column=0, sticky='nsew')
+        self.left_sidebar.grid(row=1, column=0, sticky='nsew', padx=10)
 
         self.center_frame = ctk.CTkFrame(self, width=350, fg_color="transparent")
-        self.center_frame.grid(row=1, column=1, sticky='nsew', ipady=10, ipadx=10)
+        self.center_frame.grid(row=1, column=1, sticky='nsew', padx=10)
 
         self.right_frame = ctk.CTkFrame(self, width=350, fg_color="black")
-        self.right_frame.grid(row=1, column=2, sticky='nsew')
+        self.right_frame.grid(row=1, column=2, sticky='nsew', padx=10)
 
         self.footer_frame = ctk.CTkFrame(self, height=40, fg_color="black")
         self.footer_frame.grid(row=2, columnspan=3, sticky='nsew', padx=10, pady=10)
@@ -88,7 +88,7 @@ class App(ctk.CTk):
         self.optionmenu_1.pack()
 
         #inside frame with function options
-        self.optionframe=ctk.CTkFrame(master=self.right_frame, fg_color="red")
+        self.optionframe=ctk.CTkFrame(master=self.right_frame)
         self.optionframe.pack(pady=20, padx=20, fill="both", expand=True)
         #
 
@@ -174,7 +174,7 @@ class App(ctk.CTk):
             return None
     
     def delete_preview(self): 
-        num_chars = self.get_delete_value(self)
+        num_chars = self.get_delete_value()
         if num_chars is not None:
             global position
             position = radio_var.get()
@@ -228,7 +228,7 @@ class App(ctk.CTk):
             #label with info:
             self.option_label.configure(text="Can delete given number of chars from begginng or from end of choosen file names")
             #creating frame for specific function:
-            self.func_frame = ctk.CTkFrame(master=self.optionframe, width=400, fg_color='red')
+            self.func_frame = ctk.CTkFrame(master=self.optionframe, width=400)
             self.func_frame.grid(pady=10)
 
             global radio_var
@@ -266,32 +266,32 @@ class App(ctk.CTk):
             self.func_d_preview_button.grid()
 
             #button to save changes to files
-            func_d_save_button = ctk.CTkButton(
+            self.func_d_save_button = ctk.CTkButton(
                 master=self.radio_buttons_frame,
                 text="SAVE CHANGES",
-                command=self.delete_save()
+                command=self.delete_save
             )
-            func_d_save_button.grid()
+            self.func_d_save_button.grid()
             
 
         elif choice =="Add":
             
 
-            self.title_label2.configure(text="Add")
+            self.option_label.configure(text="Add")
             self.func_frame = ctk.CTkFrame(master=self.right_frame, width=400)
             
             
         elif choice =="Add numbering":
             
-            self.title_label2.configure(text="Add numbering")
+            self.option_label.configure(text="Add numbering")
             self.func_frame = ctk.CTkFrame(master=self.right_frame, width=400)
             
         elif choice =="Find and change":
             
-            self.title_label2.configure(text="Find and change")
+            self.option_label.configure(text="Find and change")
             self.func_frame = ctk.CTkFrame(master=self.right_frame, width=400)
         
-        self.func_frame.pack()
+        self.func_frame.grid()
 
     def delete_from_filenames(self, num_chars, position, list):
         
