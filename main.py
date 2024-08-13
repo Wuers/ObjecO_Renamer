@@ -88,7 +88,7 @@ class App(ctk.CTk):
         self.optionmenu_1.pack()
 
         #inside frame with function options
-        self.optionframe=ctk.CTkFrame(master=self.right_frame, fg_color="grey")
+        self.optionframe=ctk.CTkFrame(master=self.right_frame, fg_color="red")
         self.optionframe.pack(pady=20, padx=20, fill="both", expand=True)
         #
 
@@ -221,19 +221,19 @@ class App(ctk.CTk):
     def option_callback(self,choice):
         #function that displays elements needed for the function that has been selected
         #self.clear_frame()
-        self.option_label=ctk.CTkFrame(master=self.optionframe)
+        self.option_label=ctk.CTkLabel(master=self.optionframe)
         self.option_label.grid()
         
         if choice =="Delete":
             #label with info:
             self.option_label.configure(text="Can delete given number of chars from begginng or from end of choosen file names")
             #creating frame for specific function:
-            self.func_frame = ctk.CTkFrame(master=self.optionframe, width=400)
+            self.func_frame = ctk.CTkFrame(master=self.optionframe, width=400, fg_color='red')
             self.func_frame.grid(pady=10)
 
             global radio_var
             radio_var = ctk.StringVar(value="")
-            self.radio_buttons_frame = ctk.CTkFrame(master=self.optionframe)
+            self.radio_buttons_frame = ctk.CTkFrame(master=self.optionframe)#,fg_color='blue')
             self.radio_buttons_frame.grid()
 
             radio_1 = ctk.CTkRadioButton(master=self.radio_buttons_frame, text="At the beginning", variable=radio_var, value="beginning")
@@ -244,7 +244,7 @@ class App(ctk.CTk):
             radio_2.grid()
 
             #entry to insert number of characters thats going to be deleted:
-            validate_cmd=self.radio_buttons_frame.register(self.validate_insert_if_int)
+            self.validate_cmd=self.radio_buttons_frame.register(self.validate_insert_if_int)
 
             #entry to insert number:
             global delete_entry
@@ -253,7 +253,7 @@ class App(ctk.CTk):
                 placeholder_text="insert number of character to be deleted",
                 width=250,
                 validate="key",
-                validatecommand=(validate_cmd, '%P')
+                validatecommand=(self.validate_cmd, '%P')
                 )       
             delete_entry.grid()
 
@@ -263,7 +263,7 @@ class App(ctk.CTk):
                 text="Preview",
                 command=self.delete_preview
             )
-            self.func_d_preview_button.grid(row=2, column=2, pady=10)
+            self.func_d_preview_button.grid()
 
             #button to save changes to files
             func_d_save_button = ctk.CTkButton(
@@ -279,7 +279,7 @@ class App(ctk.CTk):
 
             self.title_label2.configure(text="Add")
             self.func_frame = ctk.CTkFrame(master=self.right_frame, width=400)
-            self.func_frame.pack()
+            
             
         elif choice =="Add numbering":
             
