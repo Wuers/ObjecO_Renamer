@@ -121,9 +121,7 @@ class App(ctk.CTk):
     def add_files_button(self):
             #1 selecting files, returns list of files directories
         global file_paths_list
-        file_paths_list = fd.askopenfilenames(
-            initialdir='E:/0_Wuer/5 Projekty/Python/P2_Renamer/TEST FILES'
-            )
+        file_paths_list = fd.askopenfilenames(initialdir='E:/0_Wuer/5 Projekty/Python/P2_Renamer/TEST FILES')
         #loop that removes all files from table:
         for item in self.table1.get_children():
             self.table1.delete(item)
@@ -147,15 +145,13 @@ class App(ctk.CTk):
                 fetched_list.append(item)
 
                 # adding information to preview table:    
-                for index,file in enumerate(fetched_list, start=1):
-                    file_name, format, date, full_path = file
-                    data = [index, file_name, format, date]
-                    self.table1.insert(parent='', index='end', values=data)
-                    print (f'printed for every file in list')
-                return fetched_list
-            
+            for index,file in enumerate(fetched_list, start=1):
+                file_name, format, date, full_path = file
+                data = [index, file_name, format, date]
+                self.table1.insert(parent='', index='end', values=data)
+            return fetched_list
+        
         name_format_list=f_nested_files_list(file_paths_list)
-
         return name_format_list
 
     def validate_insert_if_int(self,V):
@@ -226,7 +222,7 @@ class App(ctk.CTk):
         self.clear_option_frame()
         
         if choice == "Delete":
-            
+
             global radio_var
             radio_var = ctk.StringVar(value="")
             #delete if clear_option_frame works good:
