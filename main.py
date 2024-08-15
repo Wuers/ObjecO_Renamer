@@ -35,13 +35,13 @@ class App(ctk.CTk):
         self.title_frame.grid(row=0, columnspan=3, sticky='nsew', pady=10, padx=10)
 
         self.left_sidebar = ctk.CTkFrame(self, width=150, fg_color="black")
-        self.left_sidebar.grid(row=1, column=0, sticky='nsew')
+        self.left_sidebar.grid(row=1, column=0, sticky='nsew', padx=10)
 
         self.center_frame = ctk.CTkFrame(self, width=350, fg_color="transparent")
-        self.center_frame.grid(row=1, column=1, sticky='nsew', ipady=10, ipadx=10)
+        self.center_frame.grid(row=1, column=1, sticky='nsew', padx=10)
 
         self.right_frame = ctk.CTkFrame(self, width=350, fg_color="black")
-        self.right_frame.grid(row=1, column=2, sticky='nsew')
+        self.right_frame.grid(row=1, column=2, sticky='nsew', padx=10)
 
         self.footer_frame = ctk.CTkFrame(self, height=40, fg_color="black")
         self.footer_frame.grid(row=2, columnspan=3, sticky='nsew', padx=10, pady=10)
@@ -50,34 +50,291 @@ class App(ctk.CTk):
         self.title_label = ctk.CTkLabel(self.title_frame, text="Renamer", font=ctk.CTkFont(size=20, weight="bold"))
         self.title_label.grid(row=0, column=0, padx=10, pady=10)
         #center
-        self.title_label2 = ctk.CTkLabel(self.center_frame, text="Center", font=ctk.CTkFont(size=20, weight="bold"))
-        self.title_label2.grid(row=0, column=0, padx=10, pady=10)
+        self.center_label = ctk.CTkLabel(self.center_frame, text="Center", font=ctk.CTkFont(size=20, weight="bold"))
+        self.center_label.grid(row=0, column=0, padx=10, pady=10)
         #footer
         self.footer =ctk.CTkLabel(self.footer_frame, text="Renamer by Wiktor Sadowski 2024", font=ctk.CTkFont(size=11))
         #self.footer.grid(row=0, column=0)
         self.footer.pack(expand=True)
         #treewiev
-
-        #TO DO: SCHRINK SIZE OF TREEVIEW
         
-        self.table1 = ttk.Treeview(self.center_frame, columns =('number', 'old_file_name','new_file_name','format', 'date'), show = 'headings')
-        self.table1.heading('number', text = 'Number') 
-        self.table1.heading('old_file_name', text = 'File name')
-        self.table1.heading('new_file_name', text ='New file name')
-        self.table1.heading('format', text = 'Format')
-        self.table1.heading('date', text = 'Creation date')
+        self.table1 = ttk.Treeview(self.center_frame,
+                                     columns =('number', 'old_file_name','new_file_name','format', 'date'),
+                                     show = 'headings')
+                                    
+        self.table1heading = ('number', 'old_file_name','new_file_name','format', 'date')
+        self.table1column = ('Number', 'File name', 'New File name', 'Format','Creation date')
+        for heading, columnname in zip(self.table1heading, self.table1column):
+            self.table1.heading(heading, text=columnname)
+            self.table1.column(heading, anchor='center', width=120) 
+
         self.table1.grid(sticky = 'nsew')
 
         #add files button
-        self.add_files_button = ctk.CTkButton(self.left_sidebar, text="ADD FILES")
+        self.add_files_button = ctk.CTkButton(self.left_sidebar, text="ADD FILES", command=self.add_files_button)
         self.add_files_button.pack()
+
         #choose option button
+        self.title2_label = ctk.CTkLabel(master=self.right_frame,height=20,width=100,
+                           padx=10, pady=20,
+                           text="Choose settings:")
+        self.title2_label.pack()
 
-        #frame with function options
+        self.optionmenu_1=ctk.CTkOptionMenu(master=self.right_frame,
+                                values=['Delete', 'Add','Add numbering','Find and change'],
+                                command=self.option_callback)
+        
+        self.optionmenu_1.set('Choose option')
+        self.optionmenu_1.pack()
 
+        #inside frame with function options
+        self.outer_option_frame=ctk.CTkFrame(master=self.right_frame)
+        self.outer_option_frame.pack(pady=20, padx=20, fill="both", expand=True)
         #
+        self.option_frame=ctk.CTkFrame(master=self.outer_option_frame)
+        self.option_frame.pack()
 
-#running app
+
+        ###TEST
+        self.test_button=ctk.CTkButton(master=self.center_frame, text="TEST button", command=self.test_button)
+        self.test_button.grid()
+
+    #FUNCTIONS:
+    #buttons:
+    #test button
+    def test_button(self):
+        global string_list
+        string_list = "testowy ciag znakow"
+
+        global string_list2
+        string_list2 = "testowy ciag znakow"
+
+        labeltest = ctk.CTkLabel(master=self.option_frame, text='test label')
+        labeltest.grid()
+
+        def printing_machine(string_to_print):
+            print(f'{string_to_print}')
+        
+        return printing_machine(string_list)
+
+
+    def add_files_button(self):
+            #1 selecting files, returns list of files directories
+        global file_paths_list
+        file_paths_list = fd.askopenfilenames(
+            initialdir='E:/0_Wuer/5 Projekty/Python/P2_Renamer/TEST FILES'
+            )
+        #loop that removes all files from table:
+        for item in self.table1.get_children():
+            self.table1.delete(item)
+            
+        global name_format_list
+        def f_nested_files_list(file_path_list):
+            #returns nested list of [[name1,format1,date1,file1_path](...)]
+            #global format_index
+            global fetched_list
+            fetched_list = []
+            for file in file_path_list:
+                name = os.path.basename(file)
+                name_without_exntension = os.path.splitext(name)[0]
+                format = os.path.splitext(name)[1][1:]
+                creation_time = os.path.getctime(file)
+                creation_date = datetime.datetime.fromtimestamp(creation_time)
+                formated_creation_date = creation_date.strftime("%Y-%m-%d %H:%M")
+
+                #item is a tuple - file information.
+                item = [name_without_exntension, format, formated_creation_date, file]
+                fetched_list.append(item)
+
+                # adding information to preview table:    
+                for index,file in enumerate(fetched_list, start=1):
+                    file_name, format, date, full_path = file
+                    data = [index, file_name, format, date]
+                    self.table1.insert(parent='', index='end', values=data)
+                    print (f'printed for every file in list')
+                return fetched_list
+            
+        name_format_list=f_nested_files_list(file_paths_list)
+
+        return name_format_list
+
+    def validate_insert_if_int(self,V):
+        #function to validate if inserted character is int
+        if V == "" or V.isdigit():
+            return True
+        else:
+            return False
+
+    def get_delete_value(self):
+        #function that return int value from delete_entry
+        global delete_entry
+        value = delete_entry.get()
+        if value.isdigit():
+            return int(value)
+        else:
+            print ("Please insert only value, not string etc")
+            return None
+    
+    def delete_preview(self): 
+        num_chars = self.get_delete_value()
+        if num_chars is not None:
+            global position
+            position = radio_var.get()
+            global fetched_list
+            new_fetched_list, old_and_new_paths = self.delete_from_filenames(num_chars, position, fetched_list)
+            for old, new in old_and_new_paths:
+                print(f"OLD: {old}")
+                print(f"NEW: {new}")
+                print("-----")
+            self.update_table(new_fetched_list)
+        else:
+            print ("num_chars is bugged. Current value:", num_chars)
+        global confirmation_label
+        if 'confirmation_label' in globals() and confirmation_label.winfo_exists():
+            confirmation_label.destroy()
+
+    def delete_save(self):
+        # call delete_from_filenames to get old and new file paths
+        num_chars = self.get_delete_value()
+        position = radio_var.get()
+        global fetched_list
+        
+        modified_list, old_and_new_path = self.delete_from_filenames(num_chars, position, fetched_list)
+        for old_path, new_path in old_and_new_path:
+            try:
+                os.rename(old_path, new_path)
+            except OSError as e:
+                print(f"Error renaming {old_path} to {new_path}: {e}")
+
+        # update table with new names
+        self.update_table(modified_list)
+
+        #confirmation label:
+        global confirmation_label
+        confirmation_label = ctk.CTkLabel(
+        master = self.right_frame,
+        text = 'Changes saved!'
+        )
+        confirmation_label.pack()
+        #deleting elements from list
+        for item in self.table1.get_children():
+            self.table1.delete(item)
+
+    def option_callback(self,choice):
+        #function that displays elements needed for the function that has been selected
+
+        self.clear_option_frame()
+        
+        if choice == "Delete":
+            
+            global radio_var
+            radio_var = ctk.StringVar(value="")
+            #delete if clear_option_frame works good:
+            self.option_frame = ctk.CTkFrame(master=self.outer_option_frame)
+        
+            radio_1 = ctk.CTkRadioButton(master=self.option_frame, text="At the beginning", variable=radio_var, value="beginning")
+            radio_1.grid()
+
+            radio_2 = ctk.CTkRadioButton(master=self.option_frame, text="From end", variable=radio_var, value="end")
+            radio_2.grid()
+
+            #entry to insert number of characters thats going to be deleted:
+            validate_cmd=self.option_frame.register(self.validate_insert_if_int)
+
+            #entry to insert number:
+            global delete_entry
+            delete_entry = ctk.CTkEntry(
+                master=self.option_frame,
+                placeholder_text="insert number of character to be deleted",
+                width=250,
+                validate="key",
+                validatecommand=(validate_cmd, '%P')
+                )       
+            delete_entry.grid()
+
+            #button to send value and preview:
+            self.func_d_preview_button = ctk.CTkButton(
+                master=self.option_frame,
+                text="Preview",
+                command=self.delete_preview
+            )
+            self.func_d_preview_button.grid()
+
+            #button to save changes to files
+            self.func_d_save_button = ctk.CTkButton(
+                master=self.option_frame,
+                text="SAVE CHANGES",
+                command=self.delete_save
+            )
+            self.func_d_save_button.grid()
+            
+
+        elif choice == "Add":
+           
+            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
+            return None
+            
+        elif choice == "Add numbering":
+            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
+            return None
+            
+            
+        elif choice == "Find and change":
+            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
+            return None
+            
+        
+        self.option_frame.pack()
+
+    def delete_from_filenames(self, num_chars, position, list):
+        
+    #function that returns two list: new, modified and list with old and new paths
+        modified_list = []
+        old_and_new_path = []
+        for item in list:
+            try:
+                name, format, date, full_path = item
+            except ValueError as e:
+                print ("error is: ", e)
+                print (f"error when unpacking tuple 'item'. problematic element: {item}")
+                continue
+            if position == "beginning":
+                new_name = name[num_chars:]
+            elif position == "end":
+                new_name = name[:-num_chars] if len(name) > num_chars else ""
+            else:
+                new_name = name
+
+            old_path = full_path
+            #new_path = os.path.join(os.path.dirname(full_path), f"{new_name}.{format}")
+            new_path = os.path.normpath(os.path.join(os.path.dirname(full_path), f"{new_name}.{format}"))
+
+            modified_list.append([new_name, format, date, new_path])
+            old_and_new_path.append((old_path, new_path))
+
+        return modified_list, old_and_new_path
+
+    def update_table(self, new_list):
+    #function to update table
+        #delete current preview
+        for item in self.table1.get_children():
+            self.table1.delete(item)
+        #add new preview
+        for index, item in enumerate(new_list, start=1):
+            name, format, date, full_path = item
+            self.table1.insert('', 'end', values=(index, name, format, date))
+
+    def clear_option_frame(self):
+        #working for some cases:
+        #if self.option_frame.winfo_exists():
+        #    self.option_frame.destroy()
+        #another try:
+        if self.option_frame is not None:
+            self.option_frame.destroy()
+            self.option_frame = None
+        return None
+
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()
