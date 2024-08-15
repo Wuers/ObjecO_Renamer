@@ -91,6 +91,9 @@ class App(ctk.CTk):
         self.outer_option_frame=ctk.CTkFrame(master=self.right_frame)
         self.outer_option_frame.pack(pady=20, padx=20, fill="both", expand=True)
         #
+        self.option_frame=ctk.CTkFrame(master=self.outer_option_frame)
+        self.option_frame.pack()
+
 
         ###TEST
         self.test_button=ctk.CTkButton(master=self.center_frame, text="TEST button", command=self.test_button)
@@ -106,7 +109,7 @@ class App(ctk.CTk):
         global string_list2
         string_list2 = "testowy ciag znakow"
 
-        labeltest = ctk.CTkLabel(master=self.optionframe, text='test label')
+        labeltest = ctk.CTkLabel(master=self.option_frame, text='test label')
         labeltest.grid()
 
         def printing_machine(string_to_print):
@@ -220,26 +223,23 @@ class App(ctk.CTk):
     def option_callback(self,choice):
         #function that displays elements needed for the function that has been selected
 
-        #self.clear_option_frame()
+        self.clear_option_frame()
         
         if choice == "Delete":
+            
             global radio_var
             radio_var = ctk.StringVar(value="")
+            #delete if clear_option_frame works good:
             self.option_frame = ctk.CTkFrame(master=self.outer_option_frame)
-            self.option_frame.grid()
-
-            self.option_label=ctk.CTkLabel(master=self.option_frame, text="Can delete given number of chars from begginng or from end of choosen file names")
-            self.option_frame.pack()
-
+        
             radio_1 = ctk.CTkRadioButton(master=self.option_frame, text="At the beginning", variable=radio_var, value="beginning")
-            #radio_1.grid(row=0, column=0, pady=10)
             radio_1.grid()
+
             radio_2 = ctk.CTkRadioButton(master=self.option_frame, text="From end", variable=radio_var, value="end")
-            #radio_2.grid(row=0, column=2, pady=10)
             radio_2.grid()
 
             #entry to insert number of characters thats going to be deleted:
-            self.validate_cmd=self.option_frame.register(self.validate_insert_if_int)
+            validate_cmd=self.option_frame.register(self.validate_insert_if_int)
 
             #entry to insert number:
             global delete_entry
@@ -248,7 +248,7 @@ class App(ctk.CTk):
                 placeholder_text="insert number of character to be deleted",
                 width=250,
                 validate="key",
-                validatecommand=(self.validate_cmd, '%P')
+                validatecommand=(validate_cmd, '%P')
                 )       
             delete_entry.grid()
 
@@ -270,21 +270,19 @@ class App(ctk.CTk):
             
 
         elif choice == "Add":
-            
-
-            self.option_label.configure(text="Add")
-            self.option_frame = ctk.CTkFrame(master=self.right_frame, width=300)
-            
+           
+            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
+            return None
             
         elif choice == "Add numbering":
+            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
+            return None
             
-            self.option_label.configure(text="Add numbering")
-            self.option_frame = ctk.CTkFrame(master=self.right_frame, width=300)
             
         elif choice == "Find and change":
+            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
+            return None
             
-            self.option_label.configure(text="Find and change")
-            self.option_frame = ctk.CTkFrame(master=self.right_frame, width=300)
         
         self.option_frame.pack()
 
@@ -327,8 +325,13 @@ class App(ctk.CTk):
             self.table1.insert('', 'end', values=(index, name, format, date))
 
     def clear_option_frame(self):
-        if self.option_frame.winfo_exists():
+        #working for some cases:
+        #if self.option_frame.winfo_exists():
+        #    self.option_frame.destroy()
+        #another try:
+        if self.option_frame is not None:
             self.option_frame.destroy()
+            self.option_frame = None
         return None
 
 
