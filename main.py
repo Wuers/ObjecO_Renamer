@@ -88,8 +88,8 @@ class App(ctk.CTk):
         self.optionmenu_1.pack()
 
         #inside frame with function options
-        self.optionframe=ctk.CTkFrame(master=self.right_frame)
-        self.optionframe.pack(pady=20, padx=20, fill="both", expand=True)
+        self.outer_option_frame=ctk.CTkFrame(master=self.right_frame)
+        self.outer_option_frame.pack(pady=20, padx=20, fill="both", expand=True)
         #
 
         ###TEST
@@ -113,7 +113,6 @@ class App(ctk.CTk):
             print(f'{string_to_print}')
         
         return printing_machine(string_list)
-
 
 
     def add_files_button(self):
@@ -220,36 +219,32 @@ class App(ctk.CTk):
 
     def option_callback(self,choice):
         #function that displays elements needed for the function that has been selected
-        #self.clear_frame()
-        self.option_label=ctk.CTkLabel(master=self.optionframe)
-        self.option_label.grid()
-        
-        if choice =="Delete":
-            #label with info:
-            self.option_label.configure(text="Can delete given number of chars from begginng or from end of choosen file names")
-            #creating frame for specific function:
-            self.func_frame = ctk.CTkFrame(master=self.optionframe, width=400)
-            self.func_frame.grid(pady=10)
 
+        #self.clear_option_frame()
+        
+        if choice == "Delete":
             global radio_var
             radio_var = ctk.StringVar(value="")
-            self.radio_buttons_frame = ctk.CTkFrame(master=self.optionframe)#,fg_color='blue')
-            self.radio_buttons_frame.grid()
+            self.option_frame = ctk.CTkFrame(master=self.outer_option_frame)
+            self.option_frame.grid()
 
-            radio_1 = ctk.CTkRadioButton(master=self.radio_buttons_frame, text="At the beginning", variable=radio_var, value="beginning")
+            self.option_label=ctk.CTkLabel(master=self.option_frame, text="Can delete given number of chars from begginng or from end of choosen file names")
+            self.option_frame.pack()
+
+            radio_1 = ctk.CTkRadioButton(master=self.option_frame, text="At the beginning", variable=radio_var, value="beginning")
             #radio_1.grid(row=0, column=0, pady=10)
             radio_1.grid()
-            radio_2 = ctk.CTkRadioButton(master=self.radio_buttons_frame, text="From end", variable=radio_var, value="end")
+            radio_2 = ctk.CTkRadioButton(master=self.option_frame, text="From end", variable=radio_var, value="end")
             #radio_2.grid(row=0, column=2, pady=10)
             radio_2.grid()
 
             #entry to insert number of characters thats going to be deleted:
-            self.validate_cmd=self.radio_buttons_frame.register(self.validate_insert_if_int)
+            self.validate_cmd=self.option_frame.register(self.validate_insert_if_int)
 
             #entry to insert number:
             global delete_entry
             delete_entry = ctk.CTkEntry(
-                master=self.radio_buttons_frame,
+                master=self.option_frame,
                 placeholder_text="insert number of character to be deleted",
                 width=250,
                 validate="key",
@@ -259,7 +254,7 @@ class App(ctk.CTk):
 
             #button to send value and preview:
             self.func_d_preview_button = ctk.CTkButton(
-                master=self.radio_buttons_frame,
+                master=self.option_frame,
                 text="Preview",
                 command=self.delete_preview
             )
@@ -267,31 +262,31 @@ class App(ctk.CTk):
 
             #button to save changes to files
             self.func_d_save_button = ctk.CTkButton(
-                master=self.radio_buttons_frame,
+                master=self.option_frame,
                 text="SAVE CHANGES",
                 command=self.delete_save
             )
             self.func_d_save_button.grid()
             
 
-        elif choice =="Add":
+        elif choice == "Add":
             
 
             self.option_label.configure(text="Add")
-            self.func_frame = ctk.CTkFrame(master=self.right_frame, width=400)
+            self.option_frame = ctk.CTkFrame(master=self.right_frame, width=300)
             
             
-        elif choice =="Add numbering":
+        elif choice == "Add numbering":
             
             self.option_label.configure(text="Add numbering")
-            self.func_frame = ctk.CTkFrame(master=self.right_frame, width=400)
+            self.option_frame = ctk.CTkFrame(master=self.right_frame, width=300)
             
-        elif choice =="Find and change":
+        elif choice == "Find and change":
             
             self.option_label.configure(text="Find and change")
-            self.func_frame = ctk.CTkFrame(master=self.right_frame, width=400)
+            self.option_frame = ctk.CTkFrame(master=self.right_frame, width=300)
         
-        self.func_frame.grid()
+        self.option_frame.pack()
 
     def delete_from_filenames(self, num_chars, position, list):
         
@@ -331,13 +326,12 @@ class App(ctk.CTk):
             name, format, date, full_path = item
             self.table1.insert('', 'end', values=(index, name, format, date))
 
-    def clear_frame(self):
+    def clear_option_frame(self):
+        if self.option_frame.winfo_exists():
+            self.option_frame.destroy()
+        return None
 
-        global func_frame
-        if 'func_frame' in globals() and func_frame.winfo_exists():
-            func_frame.destroy()
 
-#running app
 if __name__ == "__main__":
     app = App()
     app.mainloop()
