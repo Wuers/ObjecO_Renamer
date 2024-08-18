@@ -144,14 +144,16 @@ class App(ctk.CTk):
                 item = [name_without_exntension, format, formated_creation_date, file]
                 fetched_list.append(item)
 
-                # adding information to preview table:    
+                # adding info to table:    
             for index,file in enumerate(fetched_list, start=1):
                 file_name, format, date, full_path = file
-                data = [index, file_name, format, date]
+                data = [index, file_name,'-', format, date]
                 self.table1.insert(parent='', index='end', values=data)
             return fetched_list
         
         name_format_list=f_nested_files_list(file_paths_list)
+        ##delete this
+        print(f"name format list to: {name_format_list}")
         return name_format_list
 
     def validate_insert_if_int(self,V):
@@ -295,8 +297,10 @@ class App(ctk.CTk):
                 print (f"error when unpacking tuple 'item'. problematic element: {item}")
                 continue
             if position == "beginning":
+                old_name = name
                 new_name = name[num_chars:]
             elif position == "end":
+                old_name = name
                 new_name = name[:-num_chars] if len(name) > num_chars else ""
             else:
                 new_name = name
@@ -305,7 +309,7 @@ class App(ctk.CTk):
             #new_path = os.path.join(os.path.dirname(full_path), f"{new_name}.{format}")
             new_path = os.path.normpath(os.path.join(os.path.dirname(full_path), f"{new_name}.{format}"))
 
-            modified_list.append([new_name, format, date, new_path])
+            modified_list.append([new_name, old_name, format, date, new_path])
             old_and_new_path.append((old_path, new_path))
 
         return modified_list, old_and_new_path
@@ -317,8 +321,9 @@ class App(ctk.CTk):
             self.table1.delete(item)
         #add new preview
         for index, item in enumerate(new_list, start=1):
-            name, format, date, full_path = item
-            self.table1.insert('', 'end', values=(index, name, format, date))
+            name, old_name, format, date, full_path = item
+#todo reaplace "stara nazwa" with old name
+            self.table1.insert('', 'end', values=(index, old_name, name, format, date))
 
     def clear_option_frame(self):
         #working for some cases:
