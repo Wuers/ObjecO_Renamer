@@ -17,6 +17,7 @@ The app was created on python version 3.12.4 with the following libraries:
 
 
 ## Functionalities
+There are diffrences between my first Renamer app - as some aspects were updated during modifying scirpt for object-oriented.
 It currently has a fully functioning ‘delete’ option - for removing characters from the beginnings and ends of file names.
 Other functionality has not been finalised, but will be analogous to the existing one and may be added in the future.
 
@@ -25,4 +26,5 @@ instruction to be added.
 
 ## Contact
 [LinkedIn](https://www.linkedin.com/in/wiktor-sadowski-1385ba207/)
-[github](https://github.com/Wuers)
+
+[Github](https://github.com/Wuers)
