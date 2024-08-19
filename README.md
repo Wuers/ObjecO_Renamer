@@ -1,12 +1,12 @@
 ﻿#  Renamer (Object Oriented)
 
 ## Description
-    Renamer is a simple app with a GUI for file name editing that can help
-    when working on large numbers of files where a lot of manual changes are
-    very time consuming. 
+Renamer is a simple app with a GUI for file name editing that can help
+when working on large numbers of files where a lot of manual changes are
+very time consuming. 
 
-    The project was developed in python using the CustomTkinter for learning
-    the object approach and a popular GUI library for python and also for personal use.
+The project was developed in python using the CustomTkinter for learning
+the object approach and a popular GUI library for python and also for personal use.
 
 ## Dependencies
 The app was created on python version 3.12.4 with the following libraries:
