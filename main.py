@@ -95,29 +95,6 @@ class App(ctk.CTk):
         self.option_frame.pack()
 
 
-        ###TEST
-        self.test_button=ctk.CTkButton(master=self.center_frame, text="TEST button", command=self.test_button)
-        self.test_button.grid()
-
-    #FUNCTIONS:
-    #buttons:
-    #test button
-    def test_button(self):
-        global string_list
-        string_list = "testowy ciag znakow"
-
-        global string_list2
-        string_list2 = "testowy ciag znakow"
-
-        labeltest = ctk.CTkLabel(master=self.option_frame, text='test label')
-        labeltest.grid()
-
-        def printing_machine(string_to_print):
-            print(f'{string_to_print}')
-        
-        return printing_machine(string_list)
-
-
     def add_files_button(self):
             #1 selecting files, returns list of files directories
         global file_paths_list
@@ -218,6 +195,52 @@ class App(ctk.CTk):
         for item in self.table1.get_children():
             self.table1.delete(item)
 
+    def add_preview(self): 
+        global add_string_entry
+        custom_string = add_string_entry.get()
+        position = int(add_position_entry.get())
+
+        if custom_string is not None and position is not None:
+            global fetched_list
+            new_fetched_list, old_and_new_paths = self.add_to_filenames(custom_string, position, fetched_list)
+            for old, new in old_and_new_paths:
+                print(f"OLD: {old}")
+                print(f"NEW: {new}")
+                print("-----")
+            self.update_table(new_fetched_list)
+        else:
+            print ("add_string is bugged. Current value:", position)
+        global confirmation_label
+        if 'confirmation_label' in globals() and confirmation_label.winfo_exists():
+            confirmation_label.destroy()
+
+    def add_save(self):
+        # call delete_from_filenames to get old and new file paths
+        custom_string = add_string_entry.get()
+        position = int(add_position_entry.get())
+        global fetched_list
+        
+        modified_list, old_and_new_path = self.add_to_filenames(custom_string, position, fetched_list)
+        for old_path, new_path in old_and_new_path:
+            try:
+                os.rename(old_path, new_path)
+            except OSError as e:
+                print(f"Error renaming {old_path} to {new_path}: {e}")
+
+        # update table with new names
+        self.update_table(modified_list)
+
+        #confirmation label:
+        global confirmation_label
+        confirmation_label = ctk.CTkLabel(
+        master = self.right_frame,
+        text = 'Changes saved!'
+        )
+        confirmation_label.pack()
+        #deleting elements from list
+        for item in self.table1.get_children():
+            self.table1.delete(item)
+
     def option_callback(self,choice):
         #function that displays elements needed for the function that has been selected
 
@@ -227,7 +250,6 @@ class App(ctk.CTk):
 
             global radio_var
             radio_var = ctk.StringVar(value="")
-            #delete if clear_option_frame works good:
             self.option_frame = ctk.CTkFrame(master=self.outer_option_frame)
         
             radio_1 = ctk.CTkRadioButton(master=self.option_frame, text="At the beginning", variable=radio_var, value="beginning")
@@ -258,6 +280,7 @@ class App(ctk.CTk):
             )
             self.func_d_preview_button.grid()
 
+
             #button to save changes to files
             self.func_d_save_button = ctk.CTkButton(
                 master=self.option_frame,
@@ -266,22 +289,57 @@ class App(ctk.CTk):
             )
             self.func_d_save_button.grid()
             
-
         elif choice == "Add":
-           
-            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
-            return None
-            
+            print(f"it works! almost")
+            self.option_frame = ctk.CTkFrame(master=self.outer_option_frame)
+
+            #entry to insert number of characters thats going to be deleted:
+            validate_cmd=self.option_frame.register(self.validate_insert_if_int)
+
+            #entry to insert added string:
+            global add_string_entry
+            global add_position_entry
+            add_string_entry = ctk.CTkEntry(
+                master=self.option_frame,
+                placeholder_text="insert text that you want to add",
+                width=250)
+            add_string_entry.grid()
+
+            add_position_entry = ctk.CTkEntry(
+                master=self.option_frame,
+                placeholder_text="insert position where to add your custom text",
+                width=250)
+            add_position_entry.grid()
+
+            #button to send value and preview:
+            self.func_a_preview_button = ctk.CTkButton(
+                master=self.option_frame,
+                text="Preview",
+                command=self.add_preview
+            )
+            self.func_a_preview_button.grid()
+
+            #button to save changes to files
+            self.func_a_save_button = ctk.CTkButton(
+                master=self.option_frame,
+                text="SAVE CHANGES",
+                command=self.add_save
+            )
+            self.func_a_save_button.grid()
+
         elif choice == "Add numbering":
-            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
-            return None
             
-            
+            self.option_frame = ctk.CTkFrame(master=self.outer_option_frame)
+            self.option_frame.grid()
+            custom_label = ctk.CTkLabel(master=self.option_frame, text='To be implemented in the future')
+            custom_label.grid()
+             
         elif choice == "Find and change":
-            self.option_frame = ctk.CTkFrame(master=self.option_frame, width=300)
-            return None
+            self.option_frame = ctk.CTkFrame(master=self.outer_option_frame)
+            self.option_frame.grid()
+            custom_label = ctk.CTkLabel(master=self.option_frame, text='To be implemented in the future')
+            custom_label.grid()
             
-        
         self.option_frame.pack()
 
     def delete_from_filenames(self, num_chars, position, list):
@@ -313,23 +371,43 @@ class App(ctk.CTk):
             old_and_new_path.append((old_path, new_path))
 
         return modified_list, old_and_new_path
+    
+    def add_to_filenames(self, string_to_add, string_position, list):
+        
+    #function that returns two list: new (modified) and list with old and new paths
+        modified_list = []
+        old_and_new_path = []
+        
+        for item in list:
+            try:
+                name, format, date, full_path = item
+            except ValueError as e:
+                print ("error is: ", e)
+                print (f"error when unpacking tuple 'item'. problematic element: {item}")
+                continue
+            old_name = name
+            #new_name = item[0:2]+custom_string+item[2:]
+            new_name = name[0:string_position-1]+string_to_add+name[string_position-1:]
+            old_path = full_path
+            new_path = os.path.normpath(os.path.join(os.path.dirname(full_path), f"{new_name}.{format}"))
+
+            modified_list.append([new_name, old_name, format, date, new_path])
+            old_and_new_path.append((old_path, new_path))
+
+        return modified_list, old_and_new_path
 
     def update_table(self, new_list):
-    #function to update table
+    #updates table
         #delete current preview
         for item in self.table1.get_children():
             self.table1.delete(item)
         #add new preview
         for index, item in enumerate(new_list, start=1):
             name, old_name, format, date, full_path = item
-#todo reaplace "stara nazwa" with old name
             self.table1.insert('', 'end', values=(index, old_name, name, format, date))
 
     def clear_option_frame(self):
-        #working for some cases:
-        #if self.option_frame.winfo_exists():
-        #    self.option_frame.destroy()
-        #another try:
+        #clears option frame
         if self.option_frame is not None:
             self.option_frame.destroy()
             self.option_frame = None
