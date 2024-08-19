@@ -9,17 +9,20 @@
     the object approach and a popular GUI library for python and also for personal use.
 
 ## Dependencies
-    The app was created on python version 3.12.4 with the following libraries:  
-    -tkinter
-    -customtkinter (https://github.com/TomSchimansky/CustomTkinter)
+The app was created on python version 3.12.4 with the following libraries:
+
+-tkinter
+
+-[customtkinter](https://github.com/TomSchimansky/CustomTkinter)
+
 
 ## Functionalities
-    It currently has a fully functioning ‘delete’ option - for removing characters from the beginnings and ends of file names.
-    Other functionality has not been finalised, but will be analogous to the existing one and may be added in the future.
+It currently has a fully functioning ‘delete’ option - for removing characters from the beginnings and ends of file names.
+Other functionality has not been finalised, but will be analogous to the existing one and may be added in the future.
 
 ## Usage
-    instruction to be added.
+instruction to be added.
 
 ## Contact
-    [Linkedin]([readme.com](https://www.linkedin.com/in/wiktor-sadowski-1385ba207/))
-    https://github.com/Wuers
+[LinkedIn](https://www.linkedin.com/in/wiktor-sadowski-1385ba207/)
+[github](https://github.com/Wuers)
