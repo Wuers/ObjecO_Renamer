@@ -26,12 +26,8 @@ class App(ctk.CTk):
         self.label2=ctk.CTkLabel(self, text='Label2')
         self.label3=ctk.CTkLabel(self, text='Label3')
 
-        
-        #self.label2.grid(row=0, column=1)
-        #self.label3.grid(row=0, column=2)
 
         self.title_frame = ctk.CTkFrame(self, fg_color="black")
-        #self.title_frame.pack(self)
         self.title_frame.grid(row=0, columnspan=3, sticky='nsew', pady=10, padx=10)
 
         self.left_sidebar = ctk.CTkFrame(self, width=150, fg_color="black")
@@ -54,10 +50,8 @@ class App(ctk.CTk):
         self.center_label.grid(row=0, column=0, padx=10, pady=10)
         #footer
         self.footer =ctk.CTkLabel(self.footer_frame, text="Renamer by Wiktor Sadowski 2024", font=ctk.CTkFont(size=11))
-        #self.footer.grid(row=0, column=0)
         self.footer.pack(expand=True)
         #treewiev
-        
         self.table1 = ttk.Treeview(self.center_frame,
                                      columns =('number', 'old_file_name','new_file_name','format', 'date'),
                                      show = 'headings')
@@ -67,13 +61,11 @@ class App(ctk.CTk):
         for heading, columnname in zip(self.table1heading, self.table1column):
             self.table1.heading(heading, text=columnname)
             self.table1.column(heading, anchor='center', width=120) 
-
         self.table1.grid(sticky = 'nsew')
 
         #add files button
         self.add_files_button = ctk.CTkButton(self.left_sidebar, text="ADD FILES", command=self.add_files_button)
         self.add_files_button.pack()
-
         #choose option button
         self.title2_label = ctk.CTkLabel(master=self.right_frame,height=20,width=100,
                            padx=10, pady=20,
@@ -83,18 +75,17 @@ class App(ctk.CTk):
         self.optionmenu_1=ctk.CTkOptionMenu(master=self.right_frame,
                                 values=['Delete', 'Add','Add numbering','Find and change'],
                                 command=self.option_callback)
-        
         self.optionmenu_1.set('Choose option')
         self.optionmenu_1.pack()
 
         #inside frame with function options
         self.outer_option_frame=ctk.CTkFrame(master=self.right_frame)
         self.outer_option_frame.pack(pady=20, padx=20, fill="both", expand=True)
-        #
+        
         self.option_frame=ctk.CTkFrame(master=self.outer_option_frame)
         self.option_frame.pack()
 
-
+#functions
     def add_files_button(self):
             #1 selecting files, returns list of files directories
         global file_paths_list
@@ -116,9 +107,9 @@ class App(ctk.CTk):
                 creation_time = os.path.getctime(file)
                 creation_date = datetime.datetime.fromtimestamp(creation_time)
                 formated_creation_date = creation_date.strftime("%Y-%m-%d %H:%M")
-
+                #name_len = len(name_without_exntension)
                 #item is a tuple - file information.
-                item = [name_without_exntension, format, formated_creation_date, file]
+                item = [name_without_exntension, format, formated_creation_date, file]#, name_len]
                 fetched_list.append(item)
 
                 # adding info to table:    
@@ -129,27 +120,50 @@ class App(ctk.CTk):
             return fetched_list
         
         name_format_list=f_nested_files_list(file_paths_list)
-        ##delete this
-        print(f"name format list to: {name_format_list}")
         return name_format_list
 
+#validation:
     def validate_insert_if_int(self,V):
-        #function to validate if inserted character is int
+        #checks if inserted value is of digit type
         if V == "" or V.isdigit():
             return True
         else:
             return False
 
+    def validate_insert_position(self,V):
+        #checks if insert value is digit
+        if V == "" or V.isdigit():
+            return True
+        else:
+            return False
+        
     def get_delete_value(self):
-        #function that return int value from delete_entry
+        #returns int(value) from delete_entry
         global delete_entry
         value = delete_entry.get()
         if value.isdigit():
             return int(value)
         else:
             print ("Please insert only value, not string etc")
+            
             return None
     
+    def get_add_position(self):
+        #checks insertet position (in add_position_entry)
+        global add_position_entry
+        pos = int(add_position_entry.get())
+        max_name_len = 0
+
+        for file in fetched_list:
+            if len(file[0])>max_name_len:
+                max_name_len = len(file[0])
+
+        if pos > max_name_len:
+            #change to errr_label text
+            print(f'przeginka z pos')
+            self.error_label.configure(text='position is greater than some of file names \n text concatenated to end of file names')
+        return pos
+#button actions:
     def delete_preview(self): 
         num_chars = self.get_delete_value()
         if num_chars is not None:
@@ -198,7 +212,7 @@ class App(ctk.CTk):
     def add_preview(self): 
         global add_string_entry
         custom_string = add_string_entry.get()
-        position = int(add_position_entry.get())
+        position = self.get_add_position()
 
         if custom_string is not None and position is not None:
             global fetched_list
@@ -217,7 +231,7 @@ class App(ctk.CTk):
     def add_save(self):
         # call delete_from_filenames to get old and new file paths
         custom_string = add_string_entry.get()
-        position = int(add_position_entry.get())
+        position = self.get_add_position()
         global fetched_list
         
         modified_list, old_and_new_path = self.add_to_filenames(custom_string, position, fetched_list)
@@ -240,7 +254,7 @@ class App(ctk.CTk):
         #deleting elements from list
         for item in self.table1.get_children():
             self.table1.delete(item)
-
+#choosing option:
     def option_callback(self,choice):
         #function that displays elements needed for the function that has been selected
 
@@ -260,6 +274,12 @@ class App(ctk.CTk):
 
             #entry to insert number of characters thats going to be deleted:
             validate_cmd=self.option_frame.register(self.validate_insert_if_int)
+            
+            #info label1
+            self.entry1_label = ctk.CTkLabel(
+                master = self.option_frame,
+                text = 'amout of characters to delete:')
+            self.entry1_label.grid()
 
             #entry to insert number:
             global delete_entry
@@ -290,26 +310,43 @@ class App(ctk.CTk):
             self.func_d_save_button.grid()
             
         elif choice == "Add":
-            print(f"it works! almost")
             self.option_frame = ctk.CTkFrame(master=self.outer_option_frame)
 
             #entry to insert number of characters thats going to be deleted:
-            validate_cmd=self.option_frame.register(self.validate_insert_if_int)
+            validate_cmd_pos=self.option_frame.register(self.validate_insert_position)
+
+            #info label2
+            self.entry2_label = ctk.CTkLabel(
+                master = self.option_frame,
+                text = 'insert text to add:')
+            self.entry2_label.grid()
 
             #entry to insert added string:
             global add_string_entry
-            global add_position_entry
             add_string_entry = ctk.CTkEntry(
                 master=self.option_frame,
-                placeholder_text="insert text that you want to add",
                 width=250)
             add_string_entry.grid()
 
+            #info label3
+            self.entry3_label = ctk.CTkLabel(
+                master = self.option_frame,
+                text = 'insert position (number) of added text \n in current file name:')
+            self.entry3_label.grid()
+
+            global add_position_entry
             add_position_entry = ctk.CTkEntry(
                 master=self.option_frame,
-                placeholder_text="insert position where to add your custom text",
+                validate="key",
+                validatecommand=(validate_cmd_pos, '%P'),
                 width=250)
             add_position_entry.grid()
+
+            self.error_label = ctk.CTkLabel(
+                master = self.option_frame,
+                text = '',
+                font=ctk.CTkFont(size=12, weight="bold"))
+            self.error_label.grid()
 
             #button to send value and preview:
             self.func_a_preview_button = ctk.CTkButton(
@@ -364,7 +401,6 @@ class App(ctk.CTk):
                 new_name = name
 
             old_path = full_path
-            #new_path = os.path.join(os.path.dirname(full_path), f"{new_name}.{format}")
             new_path = os.path.normpath(os.path.join(os.path.dirname(full_path), f"{new_name}.{format}"))
 
             modified_list.append([new_name, old_name, format, date, new_path])
@@ -386,7 +422,6 @@ class App(ctk.CTk):
                 print (f"error when unpacking tuple 'item'. problematic element: {item}")
                 continue
             old_name = name
-            #new_name = item[0:2]+custom_string+item[2:]
             new_name = name[0:string_position-1]+string_to_add+name[string_position-1:]
             old_path = full_path
             new_path = os.path.normpath(os.path.join(os.path.dirname(full_path), f"{new_name}.{format}"))
@@ -395,7 +430,7 @@ class App(ctk.CTk):
             old_and_new_path.append((old_path, new_path))
 
         return modified_list, old_and_new_path
-
+#table handling
     def update_table(self, new_list):
     #updates table
         #delete current preview
