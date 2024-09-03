@@ -44,9 +44,7 @@ class App(ctk.CTk):
         #title label
         self.title_label = ctk.CTkLabel(self.title_frame, text="Renamer", font=ctk.CTkFont(size=20, weight="bold"))
         self.title_label.grid(row=0, column=0, padx=10, pady=10)
-        #center
-        #self.center_label = ctk.CTkLabel(self.center_frame, text="Center", font=ctk.CTkFont(size=20, weight="bold"))
-        #self.center_label.grid(row=0, column=0, padx=10, pady=10)
+
         #footer
         self.footer =ctk.CTkLabel(self.footer_frame, text="Renamer by Wiktor Sadowski 2024", font=ctk.CTkFont(size=11))
         self.footer.pack(expand=True)
