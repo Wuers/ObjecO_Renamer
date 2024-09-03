@@ -16,7 +16,7 @@ class App(ctk.CTk):
         self.geometry(f"{1100}x{700}")
 
         #new grid layout
-        #3 columns: treewiev, options and sidebar with some info
+        #3 columns: sidebar with add files button, treeview and options 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=2)
         self.grid_columnconfigure(2, weight=1)
@@ -25,7 +25,6 @@ class App(ctk.CTk):
         
         self.label2=ctk.CTkLabel(self, text='Label2')
         self.label3=ctk.CTkLabel(self, text='Label3')
-
 
         self.title_frame = ctk.CTkFrame(self, fg_color="black")
         self.title_frame.grid(row=0, columnspan=3, sticky='nsew', pady=10, padx=10)
@@ -46,8 +45,8 @@ class App(ctk.CTk):
         self.title_label = ctk.CTkLabel(self.title_frame, text="Renamer", font=ctk.CTkFont(size=20, weight="bold"))
         self.title_label.grid(row=0, column=0, padx=10, pady=10)
         #center
-        self.center_label = ctk.CTkLabel(self.center_frame, text="Center", font=ctk.CTkFont(size=20, weight="bold"))
-        self.center_label.grid(row=0, column=0, padx=10, pady=10)
+        #self.center_label = ctk.CTkLabel(self.center_frame, text="Center", font=ctk.CTkFont(size=20, weight="bold"))
+        #self.center_label.grid(row=0, column=0, padx=10, pady=10)
         #footer
         self.footer =ctk.CTkLabel(self.footer_frame, text="Renamer by Wiktor Sadowski 2024", font=ctk.CTkFont(size=11))
         self.footer.pack(expand=True)
@@ -97,7 +96,6 @@ class App(ctk.CTk):
         global name_format_list
         def f_nested_files_list(file_path_list):
             #returns nested list of [[name1,format1,date1,file1_path](...)]
-            #global format_index
             global fetched_list
             fetched_list = []
             for file in file_path_list:
@@ -107,7 +105,6 @@ class App(ctk.CTk):
                 creation_time = os.path.getctime(file)
                 creation_date = datetime.datetime.fromtimestamp(creation_time)
                 formated_creation_date = creation_date.strftime("%Y-%m-%d %H:%M")
-                #name_len = len(name_without_exntension)
                 #item is a tuple - file information.
                 item = [name_without_exntension, format, formated_creation_date, file]#, name_len]
                 fetched_list.append(item)
@@ -122,7 +119,7 @@ class App(ctk.CTk):
         name_format_list=f_nested_files_list(file_paths_list)
         return name_format_list
 
-#validation:
+#inserted data validation:
     def validate_insert_if_int(self,V):
         #checks if inserted value is of digit type
         if V == "" or V.isdigit():
@@ -145,7 +142,6 @@ class App(ctk.CTk):
             return int(value)
         else:
             print ("Please insert only value, not string etc")
-            
             return None
     
     def get_add_position(self):
@@ -163,8 +159,10 @@ class App(ctk.CTk):
             print(f'przeginka z pos')
             self.error_label.configure(text='position is greater than some of file names \n text concatenated to end of file names')
         return pos
+    
 #button actions:
     def delete_preview(self): 
+        #updates treeview, only for preview
         num_chars = self.get_delete_value()
         if num_chars is not None:
             global position
@@ -183,11 +181,12 @@ class App(ctk.CTk):
             confirmation_label.destroy()
 
     def delete_save(self):
-        # call delete_from_filenames to get old and new file paths
+        #save changes od DELETE SAVE
         num_chars = self.get_delete_value()
         position = radio_var.get()
         global fetched_list
         
+        # call delete_from_filenames to get old and new file paths
         modified_list, old_and_new_path = self.delete_from_filenames(num_chars, position, fetched_list)
         for old_path, new_path in old_and_new_path:
             try:
@@ -205,11 +204,12 @@ class App(ctk.CTk):
         text = 'Changes saved!'
         )
         confirmation_label.pack()
-        #deleting elements from list
+        #deleting elements from treeview
         for item in self.table1.get_children():
             self.table1.delete(item)
 
     def add_preview(self): 
+        #updates treeview, only for preview
         global add_string_entry
         custom_string = add_string_entry.get()
         position = self.get_add_position()
@@ -254,6 +254,7 @@ class App(ctk.CTk):
         #deleting elements from list
         for item in self.table1.get_children():
             self.table1.delete(item)
+
 #choosing option:
     def option_callback(self,choice):
         #function that displays elements needed for the function that has been selected
@@ -381,7 +382,7 @@ class App(ctk.CTk):
 
     def delete_from_filenames(self, num_chars, position, list):
         
-    #function that returns two list: new, modified and list with old and new paths
+    #function that returns two list: new (modified) and list with old and new paths
         modified_list = []
         old_and_new_path = []
         for item in list:
@@ -409,8 +410,8 @@ class App(ctk.CTk):
         return modified_list, old_and_new_path
     
     def add_to_filenames(self, string_to_add, string_position, list):
-        
     #function that returns two list: new (modified) and list with old and new paths
+        
         modified_list = []
         old_and_new_path = []
         
@@ -430,7 +431,9 @@ class App(ctk.CTk):
             old_and_new_path.append((old_path, new_path))
 
         return modified_list, old_and_new_path
+    
 #table handling
+    
     def update_table(self, new_list):
     #updates table
         #delete current preview
@@ -448,7 +451,7 @@ class App(ctk.CTk):
             self.option_frame = None
         return None
 
-
+#running app
 if __name__ == "__main__":
     app = App()
     app.mainloop()
